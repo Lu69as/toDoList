@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Old+Sogdian&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+html { scroll-behavior: smooth; }
+:target { scroll-margin-top: 35px; }
+
+:root {
+    --bagel: "Bagel Fat One", system-ui;
+    --dosis: "Dosis", sans-serif;
+
+    --primary: #38d660;
+    --primary-darker: #279b44;
+    --secondary: #80e5cc;
+    --accent: #5eded8;
+
+    --font-color: #030c04;
+    --light-font-color: #3a3a3a;
+    --bg-color: #f3fcf6;
+
+    --section-bg: #EEE;
+    --section-secondary: #ddd;
+
+    --darkBtn: transparent;
+    --lightBtn: var(--section-bg);
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    background: var(--bg-color);
+    overflow-x: hidden;
+    font-family: var(--dosis);
+    font-size: 18px;
+    display: flex;
+}
+
+:has(.edit) .buttons .editItem {
+    &::before { content: none; }
+    &::after { content: "✔"; }
+}
+
+.autoSave {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    
+        input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 9em;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            aspect-ratio: 1;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: .4s;
+            border-radius: 9em;
+        }
+        input:checked + .slider { background: var(--accent); }
+        
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+    }
+}
+
+nav {
+    background: var(--primary);
+    position: relative;
+    min-height: 100vh;
+    padding: 40px;
+    min-width: 555px;
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: absolute;
+        right: -80px;
+        top: 40px;
+        z-index: 10;
+        
+        button {
+            border: none;
+            font-size: 35px;
+            width: 55px;
+            aspect-ratio: 1;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .editItem::before { content: "✎"; }
+    }
+
+    .createItem {
+        position: fixed;
+        bottom: 40px;
+        left: 40px;
+
+        display: flex;
+        gap: 10px;
+
+        input {
+            font-size: 25px;
+            border-radius: 15px;
+            padding: 10px 15px;
+            
+            &:focus-visible { outline: none; }
+        }
+        button {
+            font-size: 35px;
+            cursor: pointer;
+            width: 55px;
+            aspect-ratio: 1;
+            border-radius: 15px;
+        }
+        
+        input, button {
+            border: solid 2px var(--accent);
+            background: var(--section-bg);
+        }
+    }
+
+    h1 { font-size: 32px; }
+
+    th { text-align: left; }
+
+    tr { position: relative; }
+    :not(thead) tr::before {
+        content: "➜";
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: -35px;
+        opacity: 0;
+        transition: 200ms;
+    }
+    :not(thead) tr.activeItem::before { left: -30px; opacity: 1; }
+
+    tr * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+        min-width: 150px;
+
+        br { display: none; }
+    }
+    tr td:last-child {
+        max-width: 350px;
+        min-width: 350px;
+    }
+
+    .general-items {
+        margin: 5px 0 40px 15px;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+
+        tr { 
+            box-shadow: inset 0 0 0 100vw var(--accent);
+            border-radius: 5px;
+            cursor: pointer;
+
+            td { padding: 5px 10px ; transition: 400ms; }
+        }
+
+        tr:hover td { box-shadow: inset 0 0 0 100vw #00000010; }
+    }
+
+    .calendar-date {
+        margin: 5px 0 40px 15px;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+
+        th::before { content: "📅 "; }
+
+        tr { 
+            box-shadow: inset 0 0 0 100vw var(--section-secondary);
+            border-radius: 5px 5px 0 0;
+
+            th { padding: 5px 10px; }
+        }
+
+        :not(thead) tr { 
+            box-shadow: inset 0 0 0 100vw var(--accent);
+            border-radius: 5px;
+            cursor: pointer;
+
+            td { padding: 5px 10px ; transition: 400ms; }
+        }
+        tr:hover td { box-shadow: inset 0 0 0 100vw #00000010; }
+    }
+}
+
+nav.closed {
+    padding: 0;
+    > :not(.buttons) {
+        display: none;
+    }
+}
+
+.item {
+    width: max-content;
+    position: relative;
+    min-height: 100vh;
+    padding: 40px 40px 40px 120px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .title:focus-visible, .desc:focus-visible {
+        outline: none;
+    }
+
+    .title {
+        font-size: 70px;
+        font-family: var(--bagel);
+        font-weight: 400;
+
+        br { display: none; }
+    }
+
+    .desc {
+        font-size: 20px;
+    }
+}
+.item.edit :is(.title, .desc) {
+    border-bottom: solid 2px var(--font-color);
+}
