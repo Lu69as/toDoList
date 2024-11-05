@@ -33,13 +33,19 @@ body {
     background: var(--bg-color);
     overflow-x: hidden;
     font-family: var(--dosis);
-    font-size: 18px;
+    font-size: 20px;
     display: flex;
 }
 
-:has(.edit) .buttons .editItem {
-    &::before { content: none; }
-    &::after { content: "✔"; }
+:has(.edit) {
+    .itemButtons .editItem .fa-pen { display: none; }
+    .itemButtons .editItem .fa-check { display: inline-block !important; }
+    nav .editButtons { display: flex; }
+}
+:has(.closed) {
+    nav :is(.itemButtons, .editButtons) {
+        left: 35px;
+    }
 }
 
 .autoSave {
@@ -101,12 +107,12 @@ nav {
     padding: 40px;
     min-width: 555px;
 
-    .buttons {
+    .itemButtons, .editButtons {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        position: absolute;
-        right: -80px;
+        position: fixed;
+        left: 665px;
         top: 40px;
         z-index: 10;
         
@@ -119,7 +125,12 @@ nav {
             cursor: pointer;
         }
 
-        .editItem::before { content: "✎"; }
+        .editItem .fa-check { display: none; }
+    }
+    .editButtons {
+        display: none;
+        top: auto;
+        bottom: 40px;
     }
 
     .createItem {
@@ -175,6 +186,7 @@ nav {
         min-width: 150px;
 
         br { display: none; }
+        * { display: inline; pointer-events: none; }
     }
     tr td:last-child {
         max-width: 350px;
@@ -223,8 +235,9 @@ nav {
 }
 
 nav.closed {
+    min-width: 0;
     padding: 0;
-    > :not(.buttons) {
+    > :not(.itemButtons, .editButtons) {
         display: none;
     }
 }
@@ -253,6 +266,11 @@ nav.closed {
 
     .desc {
         font-size: 20px;
+        padding-bottom: 10px;
+
+        * { cursor: text; }
+        label { pointer-events: none; }
+        input { cursor: pointer; }
     }
 }
 .item.edit :is(.title, .desc) {
