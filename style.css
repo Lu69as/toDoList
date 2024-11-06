@@ -152,7 +152,7 @@ nav {
             &:focus-visible { outline: none; }
         }
         button {
-            font-size: 35px;
+            font-size: 30px;
             cursor: pointer;
             width: 55px;
             aspect-ratio: 1;
@@ -162,6 +162,10 @@ nav {
         input, button {
             border: solid 2px var(--accent);
             background: var(--section-bg);
+        }
+
+        button.import {
+            margin-left: auto;
         }
     }
 

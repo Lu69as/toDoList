@@ -40,42 +40,44 @@ function saveList() {
     localStorage.setItem("items", items);
 }
 
-localStorage.getItem("items").split("|").forEach((item) => {
-    let itemChildren = item.split("§");
-
-    if (itemChildren[2] != undefined) {
-        let madeChild = false;
-        document.querySelectorAll(".calendar-date").forEach((date) => {
-            if (date.querySelector("th").innerHTML == itemChildren[2]) {
+function init(string) {
+    string.split("|").forEach((item) => {
+        let itemChildren = item.split("§");
+    
+        if (itemChildren[2] != undefined) {
+            let madeChild = false;
+            document.querySelectorAll(".calendar-date").forEach((date) => {
+                if (date.querySelector("th").innerHTML == itemChildren[2]) {
+                    let newItem = document.createElement("tr");
+                    newItem.innerHTML = `<td>${itemChildren[0]}</td><td>${itemChildren[1]}</td>`;
+                    activeItem(newItem);
+    
+                    date.lastElementChild.appendChild(newItem);
+                    madeChild = true;
+                }
+            })
+            if (!madeChild) {
+                let newTable =  document.createElement("table");
+                newTable.classList.add("calendar-date");
+                newTable.innerHTML = `<thead><th>${itemChildren[2]}</th></thead><tbody></tbody>`;
+                    
                 let newItem = document.createElement("tr");
                 newItem.innerHTML = `<td>${itemChildren[0]}</td><td>${itemChildren[1]}</td>`;
                 activeItem(newItem);
-
-                date.lastElementChild.appendChild(newItem);
-                madeChild = true;
+    
+                newTable.lastElementChild.appendChild(newItem);
+                document.querySelector("nav").appendChild(newTable);
             }
-        })
-        if (!madeChild) {
-            let newTable =  document.createElement("table");
-            newTable.classList.add("calendar-date");
-            newTable.innerHTML = `<thead><th>${itemChildren[2]}</th></thead><tbody></tbody>`;
-                
+        }
+        else {
             let newItem = document.createElement("tr");
             newItem.innerHTML = `<td>${itemChildren[0]}</td><td>${itemChildren[1]}</td>`;
             activeItem(newItem);
-
-            newTable.lastElementChild.appendChild(newItem);
-            document.querySelector("nav").appendChild(newTable);
-        }
-    }
-    else {
-        let newItem = document.createElement("tr");
-        newItem.innerHTML = `<td>${itemChildren[0]}</td><td>${itemChildren[1]}</td>`;
-        activeItem(newItem);
-
-        document.querySelector(".general-items").appendChild(newItem);
-    }
-})
+    
+            document.querySelector(".general-items").appendChild(newItem);
+        };
+    });
+} init(localStorage.getItem("items"));
 
 function addItem() {
     let value = document.querySelector(".createItem input").value;
@@ -179,4 +181,49 @@ document.querySelector(".item .desc").addEventListener("keypress", (k) => {
             window.getSelection().focusNode.parentElement.appendChild(newList);
         }
     }
+})
+
+document.querySelectorAll("nav .createItem button").forEach((e) => {
+    if (e.classList[0] == "import") {
+        e.addEventListener("click", () => {
+            let list = prompt(`Import a list from a different session. Warning: All current items will be deleted.`);
+            try {
+                if (list.split("§")[0].length > 0 || list.split("§")[1].length > 0) {
+                    document.querySelectorAll(".general-items tr, .calendar-date").forEach((tr) => tr.remove());
+                    init(list);
+                }
+            }
+            catch (err) {
+                alert("Import attempt failed, please double check your code is valid");
+                alert(err);
+            };
+        });
+    };
+    if (e.classList[0] == "export") {
+        e.addEventListener("click", () => {
+            let items = "";
+            document.querySelectorAll("nav table > tr, nav tbody > tr").forEach((tr) => {
+                tr.querySelectorAll("td").forEach((td) => {
+                    items += td.innerHTML;
+                    
+                    if (td.innerHTML != td.parentElement.lastElementChild.innerHTML || tr.parentElement.parentElement.firstElementChild.nodeName == "THEAD")
+                        items += "§";
+                })
+
+                if (tr.parentElement.parentElement.firstElementChild.nodeName == "THEAD")
+                    items += tr.parentElement.parentElement.firstElementChild.innerText.trimEnd(" ");
+
+
+                if (tr.innerHTML != document.querySelectorAll("nav table > tr, nav tbody > tr")[
+                    document.querySelectorAll("nav table > tr, nav tbody > tr").length - 1 ].innerHTML)
+                items += "|";
+            });
+            if (!navigator.clipboard) {
+                alert("Copying failed, try to import to a different session manually with the code: " + items);
+                return;
+            }
+            navigator.clipboard.writeText(items)
+            alert("Copy successfull, go to a different session and import the code to get your list.");
+        });
+    };
 })
