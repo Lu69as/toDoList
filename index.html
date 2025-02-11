@@ -15,34 +15,28 @@
             <span class="slider round"></span>
         </label>
     </div>
-    <nav>
-        <div class="itemButtons">
-            <button class="openMenu"><i class="fa-solid fa-bars"></i></button>
-            <button class="deleteItem"><i class="fa-solid fa-x"></i></button>
-            <button class="editItem"><i class="fa-solid fa-pen"></i><i class="fa-solid fa-check"></i></button>
-        </div>
-        <div class="editButtons">
-            <button class="list"><i class="fa-solid fa-list-ul"></i></button>
-            <button class="numlist"><i class="fa-solid fa-list-ol"></i></button>
-            <button class="checklist"><i class="fa-solid fa-list-check"></i></button>
-        </div>
 
+    <button class="openMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="editButtons">
+        <button class="lock"><i class="fa-solid fa-lock"></i><i class="fa-solid fa-lock-open"></i></button>
+        <button class="list"><i class="fa-solid fa-list-ul"></i></button>
+        <button class="numlist"><i class="fa-solid fa-list-ol"></i></button>
+        <button class="checklist"><i class="fa-solid fa-list-check"></i></button>
+    </div>
+    <nav>
         <div class="createItem">
             <input type="text" placeholder="Add more items here">
             <button class="add" title="Add note to list"><i class="fa-solid fa-plus"></i></button>
             <button class="import" title="Import notes as text"><i class="fa-solid fa-file-import"></i></button>
             <button class="export" title="Export notes as text"><i class="fa-solid fa-file-export"></i></button>
         </div>
-
-        <h1>General</h1>
+        
         <table class="general-items">
         </table>
-
-        <h1>Calendar</h1>
     </nav>
     <div class="item">
-        <h1 class="title"></h1>
-        <p class="desc"></p>
+        <h1 class="title" contenteditable="true"></h1>
+        <p class="desc" contenteditable="true"></p>
     </div>
     
     <script src="./script.js"></script>
