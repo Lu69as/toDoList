@@ -4,51 +4,53 @@ if (!localStorage.getItem("items"))
 
 
 function activeItem(e) {
-    let hasHeldTooLong = false;
-    setTimeout(() => hasHeldTooLong = true, 200);
-
-    e.classList.add("moving");
-    let position = e.getBoundingClientRect();
-    function handleMouseMove() {
-        e.setAttribute("style", `
-            transform: translateY(${event.clientY - position.y - 18}px);
-            z-index: +2; `);
-    };
-
-    function handleMouseUp() {
-        document.removeEventListener("mousemove", handleMouseMove);
-
-        let itemOver = e;
-        let itemOverBy = 1000;
-        document.querySelectorAll(".general-items tr").forEach((tr) => {
-            let trDiff = tr.getBoundingClientRect().y - e.getBoundingClientRect().y;
-            if (trDiff > 0 && trDiff < itemOverBy) {
-                itemOver = tr;
-                itemOverBy = trDiff;
+    e.addEventListener("mousedown", () => {
+        let hasHeldTooLong = false;
+        setTimeout(() => hasHeldTooLong = true, 200);
+    
+        e.classList.add("moving");
+        let position = e.getBoundingClientRect();
+        function handleMouseMove() {
+            e.setAttribute("style", `
+                transform: translateY(${event.clientY - position.y - 18}px);
+                z-index: +2; `);
+        };
+    
+        function handleMouseUp() {
+            document.removeEventListener("mousemove", handleMouseMove);
+    
+            let itemOver = e;
+            let itemOverBy = 1000;
+            document.querySelectorAll(".general-items tr").forEach((tr) => {
+                let trDiff = tr.getBoundingClientRect().y - e.getBoundingClientRect().y;
+                if (trDiff > 0 && trDiff < itemOverBy) {
+                    itemOver = tr;
+                    itemOverBy = trDiff;
+                }
+            });
+            if (e == itemOver && e.parentElement.lastElementChild != e)
+                e.parentElement.appendChild(e.parentNode.removeChild(e));
+    
+            else if (e != itemOver)
+                e.parentElement.insertBefore(e.parentNode.removeChild(e), itemOver)
+    
+            e.removeAttribute("style");
+            e.classList.remove("moving");
+    
+            if (!hasHeldTooLong) {
+                document.querySelectorAll("nav tr").forEach((tr) => tr.classList.remove("activeItem"));
+                e.classList.add("activeItem");
+    
+                document.querySelector(".item .title").innerHTML = document.querySelector(".activeItem").firstElementChild.innerHTML;
+                document.querySelector(".item .desc").innerHTML = document.querySelector(".activeItem").querySelector(".content").innerHTML;
             }
-        });
-        if (e == itemOver && e.parentElement.lastElementChild != e)
-            e.parentElement.appendChild(e.parentNode.removeChild(e));
-
-        else if (e != itemOver)
-            e.parentElement.insertBefore(e.parentNode.removeChild(e), itemOver)
-
-        e.removeAttribute("style");
-        e.classList.remove("moving");
-
-        if (!hasHeldTooLong) {
-            document.querySelectorAll("nav tr").forEach((tr) => tr.classList.remove("activeItem"));
-            e.classList.add("activeItem");
-
-            document.querySelector(".item .title").innerHTML = document.querySelector(".activeItem").firstElementChild.innerHTML;
-            document.querySelector(".item .desc").innerHTML = document.querySelector(".activeItem").querySelector(".content").innerHTML;
+    
+            document.removeEventListener("mouseup", handleMouseUp);
+            saveList();
         }
-
-        document.removeEventListener("mouseup", handleMouseUp);
-        saveList();
-    }
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+    });
 };
 
 function init( list ) {
@@ -118,19 +120,20 @@ document.querySelectorAll("nav .createItem button").forEach((e) => {
     e.addEventListener("click", (evt) => {
         switch (evt.target.classList[0]) {
             case "import":
-                let list;
                 navigator.clipboard.readText()
-                .then(text => { list = text })
-                .catch(err => { list = prompt('Failed to read clipboard contents, paste your code under: ', err); });
+                .then(text => { handleList(text) })
+                .catch(err => { handleList(prompt('Failed to read clipboard contents, paste your code under: ')) });
 
-                if (list.length <= 2) break;
-                document.querySelectorAll(".general-items tr").forEach((tr) => tr.remove());
-                init( JSON.parse( list ) );
+                function handleList(list) {
+                    if (list.length <= 2) return;
+                    document.querySelectorAll(".general-items tr").forEach((tr) => tr.remove());
+                    init( JSON.parse( list ) );
+                }
             break;
             case "export":
                 let items = [];
                 document.querySelectorAll("nav table > tr, nav tbody > tr").forEach((tr) => {
-                    trItem = { title: tr.firstElementChild.innerHTML, content: tr.lastElementChild.innerHTML };
+                    trItem = { title: tr.firstElementChild.innerHTML, content: tr.querySelector(".content").innerHTML };
                     items.push(trItem);
                 });
 
